@@ -12,7 +12,7 @@ def home(request):
 def category(request, category_id):
     recipes = Recipe.objects.filter(is_published=True, category__id=category_id).order_by('-id')
 
-    return render(request,'recipes/pages/home.html', context={
+    return render(request,'recipes/pages/category.html', context={
         'recipes': recipes,
         })
 
