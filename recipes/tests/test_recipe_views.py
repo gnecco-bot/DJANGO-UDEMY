@@ -57,17 +57,17 @@ class RecipeViewsTest(RecipeTestBase):
         response = self.client.get(reverse('recipes:category', kwargs={'category_id': 1000}))
         self.assertEqual(response.status_code, 404)
         
-    # def test_recipe_category_template_loads_recipes(self):
-    #     needed_title = 'This is a category test'
-    #     # Need a recipe for this test
-    #     recipe = self.make_recipe(title=needed_title)
+    def test_recipe_category_template_loads_recipes(self):
+        needed_title = 'This is a category test'
+        # Need a recipe for this test
+        recipe = self.make_recipe(title=needed_title)
 
-    #     response = self.client.get(reverse('recipes:category', kwargs={'category_id': recipe.category.id}))
-    #     content = response.content.decode('utf-8')
+        response = self.client.get(reverse('recipes:category', kwargs={'category_id': 'title'}))
+        content = response.content.decode('utf-8')
 
-    #     # self.fail(recipe.title)
-    #     # Check if one recipe exists
-    #     self.assertIn(needed_title, content)
+        # self.fail(recipe.title)
+        # Check if one recipe exists
+        self.assertIn(needed_title, content)
         
     def test_recipe_category_template_dont_load_recipes_not_published(self):
         # Need a recipe for this teste
