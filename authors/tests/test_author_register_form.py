@@ -157,7 +157,6 @@ class AuthorRegisterFormIntegrationTest(DjangoTestCase):
         })
         
         self.client.post(url, data=self.form_data, follow=True)
-
         is_authenticated = self.client.login(
             username='testuser',
             password='@Bc123456',
