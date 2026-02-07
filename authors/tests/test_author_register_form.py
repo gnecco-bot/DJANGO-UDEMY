@@ -163,4 +163,6 @@ class AuthorRegisterFormIntegrationTest(DjangoTestCase):
         )
 
         self.assertTrue(is_authenticated) 
-        
+
+ 
+ 
