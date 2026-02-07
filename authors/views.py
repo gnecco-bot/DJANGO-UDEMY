@@ -64,7 +64,7 @@ def login_create(request):
 
     return redirect(login_url)
 
-
+@login_required(login_url='author:login', redirect_field_name='next')
 def logout_view(request):
     logout(request)
-    return redirect(reverse('authors:login'))
+    return redirect(reverse('authors:login')) 
