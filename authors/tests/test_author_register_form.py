@@ -162,4 +162,5 @@ class AuthorRegisterFormIntegrationTest(DjangoTestCase):
             password='@Bc123456',
         )
 
-        self.assertTrue(is_authenticated)
+        self.assertTrue(is_authenticated) 
+        
