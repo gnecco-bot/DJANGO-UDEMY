@@ -3,7 +3,7 @@ from selenium import webdriver
 from pathlib import Path
 from selenium.webdriver.chrome.service import Service
 
-
+# https://storage.googleapis.com/chrome-for-testing-public/144.0.7559.133/win64/chromedriver-win64.zip
 ROOT_PATH = Path(__file__).parent.parent
 CHROMEDRIVER_NAME = 'chromedriver.exe'
 CHROMEDRIVER_PATH = ROOT_PATH / 'bin' /  CHROMEDRIVER_NAME
