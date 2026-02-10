@@ -1,23 +1,23 @@
 {% if recipes.has_other_pages %}
-  <div class="container pagination">
+  <nav role="navigation" aria-label="Main Pagination" class="container pagination">
     <div class="pagination-content">
       {% if pagination_range.first_page_out_of_range %}
-        <a class="page-link page-item" href="?page=1{{ aditional_url_query }}">1</a>
+        <a class="page-link page-item" aria-label="Go to page 1" href="?page=1{{ aditional_url_query }}">1</a>
         <span class="page-item">...</span>
       {% endif %}
 
-            {% for page in pagination_range.pagination %}
-                {% if pagination_range.current_page == page %}
-                    <a href="?page={{ page }}{{ aditional_url_query }}" class="page-link page-item page-current">{{ page }}</a>
-                {% else %}
-                    <a href="?page={{ page }}{{ aditional_url_query }}" class="page-link page-item">{{ page }}</a>
-                {% endif %}
-            {% endfor %}
+      {% for page in pagination_range.pagination %}
+          {% if pagination_range.current_page == page %}
+              <a href="?page={{ page }}{{ aditional_url_query }}" aria-label="Current page {{ page }}" aria-current="True" class="page-link page-item page-current">{{ page }}</a>
+          {% else %}
+              <a href="?page={{ page }}{{ aditional_url_query }}" aria-label="Go to page {{ page }}" class="page-link page-item">{{ page }}</a>
+          {% endif %}
+      {% endfor %}
 
       {% if pagination_range.last_page_out_of_range %}
         <span class="page-item">...</span>
-        <a class="page-link page-item" href="?page={{ pagination_range.total_pages }}{{ aditional_url_query }}">{{ pagination_range.total_pages }}</a>
+        <a class="page-link page-item" aria-label="Current page {{ pagination_range.total_pages }}" href="?page={{ pagination_range.total_pages }}{{ aditional_url_query }}">{{ pagination_range.total_pages }}</a>
       {% endif %}    
     </div>
-  </div>
+  </nav>
 {% endif %}
