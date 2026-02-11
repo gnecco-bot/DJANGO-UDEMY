@@ -17,7 +17,7 @@ class RecipeHomePageFuncionalTest(RecipeBaseFunctionalTest):
     def test_recipe_search_input_can_find_correct_recipes(self):
         recipes = self.make_recipe_in_batch()
         
-        title_needed = 'This is whast I need'
+        title_needed = 'This is what I need'
 
         recipes[0].title = title_needed
         recipes[0].save()
@@ -35,6 +35,8 @@ class RecipeHomePageFuncionalTest(RecipeBaseFunctionalTest):
         # para encontrar a receita com o título desejado
         search_input.send_keys(title_needed)
         search_input.send_keys(Keys.ENTER)
+
+        self.sleep(10)
 
         # O usuário vê o que estava procurando na página
         self.assertIn(
