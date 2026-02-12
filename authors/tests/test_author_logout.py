@@ -40,4 +40,4 @@ class AuthorLogoutTest(TestCase):
             follow=True,
             )
         
-        self.assertIn('Logged outn successfully', response.content.decode('utf-8'))
+        self.assertIn('Logged out successfully', response.content.decode('utf-8'))
