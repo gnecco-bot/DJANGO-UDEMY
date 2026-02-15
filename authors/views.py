@@ -158,3 +158,18 @@ def dashboard_recipe_new(request):
             'form_action': reverse('authors:dashboard_recipe_new')
             }
         )
+        
+@login_required(login_url='authors:login', redirect_field_name='next')
+def dashboard_recipe_delete(request, id):
+    recipe = Recipe.objects.get(
+        is_published=False,
+        author=request.user,
+        pk=id,
+    )
+
+    if not recipe:
+        raise Http404()
+    
+    recipe.delete()
+    messages.success(request, 'Deleted successfully!')
+    return redirect(reverse('authors:dashboard'))
