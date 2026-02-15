@@ -139,7 +139,7 @@ def dashboard_recipe_new(request):
     )
 
     if form.is_valid():
-        recipe = form.save(commit=False)
+        recipe: Recipe = form.save(commit=False)
 
         recipe.author = request.user
         recipe.preparation_steps_is_html = False
@@ -148,8 +148,8 @@ def dashboard_recipe_new(request):
         recipe.save()
 
         messages.success(request, 'Salvo com sucesso!')
-        return redirect(reverse('authors:dashboard_recipe_edit', args=(id,)))
-
+        return redirect(reverse('authors:dashboard_recipe_edit', args=(recipe.id,))) # type:ignore
+ 
     return render(
         request,
         'authors/pages/dashboard_recipe.html',
