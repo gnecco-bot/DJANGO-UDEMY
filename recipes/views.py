@@ -1,7 +1,7 @@
 import os
 from django.db.models import Q
 from django.http import Http404
-from django.shortcuts import render, get_list_or_404, get_object_or_404
+from django.shortcuts import render, get_object_or_404
 from utils.pagination import make_pagination
 from django.views.generic import ListView
 from recipes.models import Recipe
@@ -40,19 +40,38 @@ class RecipeListViewHome(RecipeListViewBase):
 
 class RecipeListViewCategory(RecipeListViewBase):
     template_name = 'recipes/pages/category.html'
+    def get_context_data(self, *args, **kwargs):
+        ctx = super().get_context_data(*args, **kwargs)
+        search_term = self.request.GET.get('q', '')
+
+        ctx.update({
+            'title': f'{ctx.get("recipes")[0].category.name} - Category | ', # type: ignore
+        })
+
+        return ctx    
 
     def get_queryset(self, *args, **kwargs):
         qs = super().get_queryset(*args, **kwargs)
         qs = qs.filter(
             category__id=self.kwargs.get('category_id'),
         )
+
+        if not qs:
+            raise Http404()
+
         return qs
+    
 
 class RecipeListViewSearch(RecipeListViewBase):
     template_name = 'recipes/pages/search.html'
 
+
     def get_queryset(self, *args, **kwargs):
         search_term = self.request.GET.get('q', '')
+            
+        if not search_term:
+            raise Http404()
+
         qs = super().get_queryset(*args, **kwargs)
         qs = qs.filter( 
             Q(
@@ -71,34 +90,9 @@ class RecipeListViewSearch(RecipeListViewBase):
             'search_term': search_term,
             'aditional_url_query': f'&q={search_term}',
         })
-        
+
         return ctx
     
-def home(request):
-    recipes = Recipe.objects.filter(is_published=True).order_by('-id')
-    
-    page_obj, pagination_range = make_pagination(request, recipes, PER_PAGE)
-
-    return render(request,'recipes/pages/home.html', context={
-        'recipes': page_obj,
-        'pagination_range': pagination_range
-        })
-
-def category(request, category_id):
-    recipes = get_list_or_404(Recipe.objects.filter(is_published=True, category__id=category_id).order_by('-id'))
-
-    # if not recipes:
-    #     raise Http404('Not found 😭')
-    
-    page_obj, pagination_range = make_pagination(request, recipes, PER_PAGE)
-
-    return render(request,'recipes/pages/category.html', context={
-        'recipes': page_obj,
-        'pagination_range': pagination_range,
-        'title': f'{recipes[0].category.name} - Category | ', # type: ignore
-        })
-
-
 def recipe(request, id):
     # recipe = Recipe.objects.filter(pk=id, is_published=True).order_by('-id').first()
     recipe = get_object_or_404(Recipe, pk=id, is_published=True)
@@ -108,26 +102,52 @@ def recipe(request, id):
         'is_detail_page': True,
         })
 
-def search(request):
-    search_term = request.GET.get('q', '').strip()
-
-    if not search_term:
-        raise Http404()
+# def home(request):
+#     recipes = Recipe.objects.filter(is_published=True).order_by('-id')
     
-    recipes = Recipe.objects.filter(
-        Q(
-            Q(title__contains=search_term) | 
-            Q(description__contains=search_term),
-        ),
-        is_published=True
-    ).order_by('-id')
+#     page_obj, pagination_range = make_pagination(request, recipes, PER_PAGE)
 
-    page_obj, pagination_range = make_pagination(request, recipes, PER_PAGE)
+#     return render(request,'recipes/pages/home.html', context={
+#         'recipes': page_obj,
+#         'pagination_range': pagination_range
+#         })
 
-    return render(request, 'recipes/pages/search.html', {
-        'page_title': f'Search for "{search_term}" | ',
-        'search_term': search_term,
-        'recipes': page_obj,
-        'pagination_range': pagination_range,
-        'aditional_url_query': f'&q={search_term}',
-    })
+# def category(request, category_id):
+#     recipes = get_list_or_404(Recipe.objects.filter(is_published=True, category__id=category_id).order_by('-id'))
+
+#     # if not recipes:
+#     #     raise Http404('Not found 😭')
+    
+#     page_obj, pagination_range = make_pagination(request, recipes, PER_PAGE)
+
+#     return render(request,'recipes/pages/category.html', context={
+#         'recipes': page_obj,
+#         'pagination_range': pagination_range,
+#         'title': f'{recipes[0].category.name} - Category | ', # type: ignore
+#         })
+
+
+
+# def search(request):
+#     search_term = request.GET.get('q', '').strip()
+
+#     if not search_term:
+#         raise Http404()
+    
+#     recipes = Recipe.objects.filter(
+#         Q(
+#             Q(title__contains=search_term) | 
+#             Q(description__contains=search_term),
+#         ),
+#         is_published=True
+#     ).order_by('-id')
+
+#     page_obj, pagination_range = make_pagination(request, recipes, PER_PAGE)
+
+#     return render(request, 'recipes/pages/search.html', {
+#         'page_title': f'Search for "{search_term}" | ',
+#         'search_term': search_term,
+#         'recipes': page_obj,
+#         'pagination_range': pagination_range,
+#         'aditional_url_query': f'&q={search_term}',
+#     })
