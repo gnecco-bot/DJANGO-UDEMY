@@ -9,8 +9,7 @@ from django.views import View
 from recipes.models import Recipe
 
 
-@method_decorator(login_required(login_url='authors:login', redirect_field_name='next'),
-                  name='dispatch')
+@method_decorator(login_required(login_url='authors:login', redirect_field_name='next'),name='dispatch')
 class DashboardRecipe(View):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -73,8 +72,7 @@ class DashboardRecipe(View):
         
         return self.render_recipe(form)
 
-@method_decorator(login_required(login_url='authors:login', redirect_field_name='next'),
-                  name='dispatch')
+@method_decorator(login_required(login_url='authors:login', redirect_field_name='next'),name='dispatch')
 class DashboardRecipeDelete(DashboardRecipe):
     def post(self, *args, **kwargs):
         recipe = self.get_recipe(self.request.POST.get('id'))
