@@ -6,8 +6,8 @@ from .test_recipe_base import RecipeTestBase
 class RecipeDetailViewTest(RecipeTestBase):
     # RECIPE DETAIL VIEW TESTS
     def test_recipe_detail_view_function_is_correct(self):
-        view = resolve(reverse('recipes:recipe', kwargs={'id': 1}))
-        self.assertIs(view.func, views.recipe)
+        view = resolve(reverse('recipes:recipe', kwargs={'pk': 1}))
+        self.assertIs(view.func.view_class, views.RecipeDetail) # type:ignore
         
     def test_recipe_detail_view_returns_404_if_no_recipes_found(self):
         response = self.client.get(reverse('recipes:category', kwargs={'category_id': 1000}))
@@ -18,7 +18,7 @@ class RecipeDetailViewTest(RecipeTestBase):
         # Need a recipe for this teste
         self.make_recipe(title=needed_title)
 
-        response = self.client.get(reverse('recipes:recipe', kwargs={'id': 1}))
+        response = self.client.get(reverse('recipes:recipe', kwargs={'pk': 1}))
         content = response.content.decode('utf-8')
 
         # Check if one recipe exists
@@ -28,7 +28,7 @@ class RecipeDetailViewTest(RecipeTestBase):
         # Need a recipe for this teste
         recipe = self.make_recipe(is_published=False)
 
-        response = self.client.get(reverse('recipes:recipe', kwargs={'id': recipe.id})) # type: ignore
+        response = self.client.get(reverse('recipes:recipe', kwargs={'pk': recipe.id})) # type: ignore
 
         # Check if one recipe exists
         self.assertEqual(response.status_code, 404)
