@@ -7,7 +7,6 @@ from django.http import Http404
 from django.urls import reverse
 from recipes.models import Recipe
 
-
 def register_view(request):
     registeer_form_data = request.session.get('register_form_data',)
     form = RegisterForm(registeer_form_data) 
