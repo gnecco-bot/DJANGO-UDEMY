@@ -1,16 +1,22 @@
 import os
 from django.db.models import Q
-from django.db.models.query import QuerySet
 from django.http import Http404
 from django.http.response import HttpResponse as HttpResponse
 from utils.pagination import make_pagination
 from django.views.generic import ListView, DetailView
 from django.http import JsonResponse
+from django.shortcuts import render
 from recipes.models import Recipe
 from django.forms.models import model_to_dict
 
 PER_PAGE = int(os.environ.get('PER_PAGE', 6))
 
+
+def theory(request, *args, **kwargs):
+    return render(
+        request,
+        'recipes/pages/theory.html'
+    )
 
 class RecipeListViewBase(ListView):
     model = Recipe
@@ -23,7 +29,9 @@ class RecipeListViewBase(ListView):
         qs = qs.filter(
             is_published=True,
         )
+        # Seleciona apenas uma vez o dado da BD e reutiliza
         qs = qs.select_related('author', 'category')
+        # qs = qs.prefetch_related('author', 'category')
         return qs
     
     def get_context_data(self, *args, **kwargs):
