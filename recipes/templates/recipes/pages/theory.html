@@ -7,6 +7,9 @@
 </head>
 <body>
   <h1>Theory</h1>
-  <p>{{ recipes.0.title }}</p>
+  {% for recipe in recipes %}
+  <li>{{ recipe.id }} {{ recipe.author }} {{ recipe.title }}</li>
+  {% empty %}
+  {% endfor %}
 </body>
 </html>
