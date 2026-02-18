@@ -34,9 +34,11 @@ def theory(request, *args, **kwargs):
     #     )
     # )[:10]
 
-    recipes = Recipe.objects.filter(
-        id=F('author__id')
-    ).order_by('-id', 'title')[:10]
+    # recipes = Recipe.objects.filter(
+    #     id=F('author__id')
+    # ).order_by('-id', 'title')[:10]
+
+    recipes = Recipe.objects.values('id', 'title', 'author__username')[:20]
 
     context = {
         'recipes': recipes
