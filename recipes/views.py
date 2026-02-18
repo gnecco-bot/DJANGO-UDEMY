@@ -1,6 +1,6 @@
 import os
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Q
+from django.db.models import Q, F
 from django.http import Http404
 from django.http.response import HttpResponse as HttpResponse
 from utils.pagination import make_pagination
@@ -14,7 +14,7 @@ PER_PAGE = int(os.environ.get('PER_PAGE', 6))
 
 
 def theory(request, *args, **kwargs):
-    recipes = Recipe.objects.all()
+    # recipes = Recipe.objects.all()
     # recipes = recipes.filter(title__icontains='Teste').last()
     # recipes = recipes.order_by('-id').last()
     # try:
@@ -22,18 +22,22 @@ def theory(request, *args, **kwargs):
     # except ObjectDoesNotExist:
     #     recipes = None
 
+    # recipes = Recipe.objects.filter(
+    #     Q(
+    #         Q(
+    #             title__icontains='da',
+    #             id__gt=2,
+    #             is_published=True,) |
+    #         Q(
+    #             id__gt=1000
+    #         )
+    #     )
+    # )[:10]
+
     recipes = Recipe.objects.filter(
-        Q(
-            Q(
-                title__icontains='da',
-                id__gt=2,
-                is_published=True,) |
-            Q(
-                id__gt=1000
-            )
-        )
-    )[:10]
-    
+        id=F('author__id')
+    ).order_by('-id', 'title')[:10]
+
     context = {
         'recipes': recipes
     }
