@@ -7,6 +7,9 @@
 </head>
 <body>
   <h1>Theory</h1>
+
+  <p>Qtd. total de receitas: {{ number_of_recipes }}</p>
+
   <ul>
     {% for recipe in recipes %}
     <li> {{ recipe.id }} {{ recipe.title }} </li>

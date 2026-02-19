@@ -8,6 +8,7 @@ from django.views.generic import ListView, DetailView
 from django.http import JsonResponse
 from django.shortcuts import render
 from recipes.models import Recipe
+from django.db.models.aggregates import Count
 from django.forms.models import model_to_dict
 
 PER_PAGE = int(os.environ.get('PER_PAGE', 6))
@@ -40,11 +41,15 @@ def theory(request, *args, **kwargs):
 
     # recipes = Recipe.objects.values('id', 'title', 'author__username')[:20]
 
+    # recipes = Recipe.objects.defer('is_published')
     # recipes = Recipe.objects.only('id', 'title')
-    recipes = Recipe.objects.defer('is_published')
+    # recipes = Recipe.objects.values('id', 'title').filter(title__icontains='testee')
+    recipes = Recipe.objects.values('id', 'title')[:5]
+    number_of_recipes = recipes.aggregate(number=Count('id'))
 
     context = {
-        'recipes': recipes
+        'recipes': recipes,
+        'number_of_recipes': number_of_recipes['number']
     }
     
     return render(
