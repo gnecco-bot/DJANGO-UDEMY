@@ -1,6 +1,7 @@
 import os
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Q, F
+from django.db.models.functions import Concat
+from django.db.models import Q, F, Value
 from django.http import Http404
 from django.http.response import HttpResponse as HttpResponse
 from utils.pagination import make_pagination
@@ -44,7 +45,14 @@ def theory(request, *args, **kwargs):
     # recipes = Recipe.objects.defer('is_published')
     # recipes = Recipe.objects.only('id', 'title')
     # recipes = Recipe.objects.values('id', 'title').filter(title__icontains='testee')
-    recipes = Recipe.objects.values('id', 'title')[:5]
+    # recipes = Recipe.objects.values('id', 'title')[:5]
+    recipes = Recipe.objects.all().annotate(
+        author_full_name=Concat(
+            F('author__first_name'), Value(' '),
+            F('author__last_name'), Value(' ('),
+            F('author__username'), Value(')'),
+        )
+    )
     number_of_recipes = recipes.aggregate(number=Count('id'))
 
     context = {
