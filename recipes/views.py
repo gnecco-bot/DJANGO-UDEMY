@@ -46,13 +46,7 @@ def theory(request, *args, **kwargs):
     # recipes = Recipe.objects.only('id', 'title')
     # recipes = Recipe.objects.values('id', 'title').filter(title__icontains='testee')
     # recipes = Recipe.objects.values('id', 'title')[:5]
-    recipes = Recipe.objects.all().annotate(
-        author_full_name=Concat(
-            F('author__first_name'), Value(' '),
-            F('author__last_name'), Value(' ('),
-            F('author__username'), Value(')'),
-        )
-    )
+    recipes = Recipe.objects.get_published()
     number_of_recipes = recipes.aggregate(number=Count('id'))
 
     context = {
