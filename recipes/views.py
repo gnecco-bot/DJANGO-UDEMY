@@ -46,7 +46,7 @@ def theory(request, *args, **kwargs):
     # recipes = Recipe.objects.only('id', 'title')
     # recipes = Recipe.objects.values('id', 'title').filter(title__icontains='testee')
     # recipes = Recipe.objects.values('id', 'title')[:5]
-    recipes = Recipe.objects.get_published()
+    recipes = Recipe.objects.get_published() # type: ignore
     number_of_recipes = recipes.aggregate(number=Count('id'))
 
     context = {
