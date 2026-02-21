@@ -9,14 +9,14 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
+# if os.environ.get('DEBUG', None) is None:
+#     from dotenv import load_dotenv 
+#     load_dotenv()
 import os
 from pathlib import Path
 
-if os.environ.get('DEBUG', None) is None:
-    from dotenv import load_dotenv 
-    load_dotenv()
-
 from django.contrib.messages import constants
+from utils.environment import get_env_variable, parse_comma_sep_str_to_list
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -32,7 +32,14 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'INSECURE')
 DEBUG = True if os.environ.get('DEBUG') == '1' else False
 
 # ALLOWED_HOSTS: list[str] = ['*']
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = []
+
+ALLOWED_HOSTS: list[str] = parse_comma_sep_str_to_list(
+    get_env_variable('ALLOWED_HOSTS')
+)
+CSRF_TRUSTED_ORIGINS: list[str] = parse_comma_sep_str_to_list(
+    get_env_variable('CSRF_TRUSTED_ORIGINS')
+)
 
 
 # Application definition
