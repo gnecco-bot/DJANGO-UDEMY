@@ -1,6 +1,6 @@
 from .environment import BASE_DIR
 
-LANGUAGE_CODE = 'PT-br'
+LANGUAGE_CODE = 'pt-BR'
 
 TIME_ZONE = 'America/Sao_Paulo'
 
