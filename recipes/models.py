@@ -30,8 +30,8 @@ class RecipeManager(models.Manager):
 
 class Recipe(models.Model):
     objects = RecipeManager()
-    title = models.CharField(max_length=65, verbose_name=_('Title'))
-    description = models.CharField(max_length=165, verbose_name=_('Description'))
+    title = models.CharField(max_length=65, verbose_name=_('title'))
+    description = models.CharField(max_length=165, verbose_name=_('description'))
     slug = models.SlugField(unique=True)
     preparation_time = models.IntegerField()
     preparation_time_unit = models.CharField(max_length=65)
