@@ -13,6 +13,7 @@ from tag.models import Tag
 from django.db.models.aggregates import Count
 from django.forms.models import model_to_dict
 from django.utils import translation
+from django.utils.translation import gettext as _
 
 PER_PAGE = int(os.environ.get('PER_PAGE', 6))
 
@@ -116,10 +117,10 @@ class RecipeListViewCategory(RecipeListViewBase):
     template_name = 'recipes/pages/category.html'
     def get_context_data(self, *args, **kwargs):
         ctx = super().get_context_data(*args, **kwargs)
-        search_term = self.request.GET.get('q', '')
+        category_trasnlation = _('Category')
 
         ctx.update({
-            'title': f'{ctx.get("recipes")[0].category.name} - Category | ', # type: ignore
+            'title': f'{ctx.get("recipes")[0].category.name} - {category_trasnlation} | ', # type: ignore
         })
 
         return ctx    
