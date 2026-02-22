@@ -8,6 +8,7 @@ from django.db.models.functions import Concat
 from django.db.models import F, Value
 # from django.contrib.contenttypes.fields import GenericRelation
 from tag.models import Tag
+from django.utils.translation import gettext as _
 
 class Category(models.Model):
     name = models.CharField(max_length=65)
@@ -29,8 +30,8 @@ class RecipeManager(models.Manager):
 
 class Recipe(models.Model):
     objects = RecipeManager()
-    title = models.CharField(max_length=65)
-    description = models.CharField(max_length=165)
+    title = models.CharField(max_length=65, verbose_name=_('Title'))
+    description = models.CharField(max_length=165, verbose_name=_('Description'))
     slug = models.SlugField(unique=True)
     preparation_time = models.IntegerField()
     preparation_time_unit = models.CharField(max_length=65)
@@ -75,3 +76,7 @@ class Recipe(models.Model):
             
         if error_messages:
             raise ValidationError(error_messages) # type: ignore
+        
+    class Meta:
+        verbose_name = _('Recipe')
+        verbose_name_plural = _('Recipes')
