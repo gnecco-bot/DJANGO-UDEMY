@@ -1,3 +1,6 @@
+import os
+from django.conf import settings
+from PIL import Image
 from collections import defaultdict
 from django.forms import ValidationError
 from django.db import models
@@ -30,7 +33,7 @@ class RecipeManager(models.Manager):
 
 class Recipe(models.Model):
     objects = RecipeManager()
-    title = models.CharField(max_length=65, verbose_name=_('title'))
+    title = models.CharField(max_length=65, verbose_name=_('Title'))
     description = models.CharField(max_length=165, verbose_name=_('description'))
     slug = models.SlugField(unique=True)
     preparation_time = models.IntegerField()
@@ -54,12 +57,40 @@ class Recipe(models.Model):
     def get_absolute_url(self):
         return reverse('recipes:recipe', args=(self.id,)) # type:ignore 
     
+    @staticmethod
+    def resize_image(image, new_width=800):
+        image_full_path = os.path.join(settings.MEDIA_ROOT, image.name)
+        image_pillow = Image.open(image_full_path)
+        original_width, original_height = image_pillow.size 
+
+        if original_width <= new_width:
+            image_pillow.close()
+            return
+        
+        new_height = round((new_width * original_height) / original_width)
+
+        new_image = image_pillow.resize((new_width, new_height), Image.LANCZOS) # type:ignore
+
+        new_image.save(
+            image_full_path,
+            optimize=True,
+            quality=50,
+        )
+
     def save(self, *args, **kwargs):
         if not self.slug:
             slug = f'{slugify(self.title)}'
             self.slug = slug
+
+        saved = super().save(*args, **kwargs)
+
+        if self.cover:
+            try:
+                self.resize_image(self.cover, 840)
+            except FileNotFoundError:
+                ...
         
-        return super().save(*args, **kwargs)
+        return saved
     
     def clean(self, *args, **kwargs):
         error_messages = defaultdict(list)
