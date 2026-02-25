@@ -17,52 +17,6 @@ from django.utils.translation import gettext as _
 
 PER_PAGE = int(os.environ.get('PER_PAGE', 6))
 
-
-def theory(request, *args, **kwargs):
-    # recipes = Recipe.objects.all()
-    # recipes = recipes.filter(title__icontains='Teste').last()
-    # recipes = recipes.order_by('-id').last()
-    # try:
-    #     recipes = Recipe.objects.get(id=10000)
-    # except ObjectDoesNotExist:
-    #     recipes = None
-
-    # recipes = Recipe.objects.filter(
-    #     Q(
-    #         Q(
-    #             title__icontains='da',
-    #             id__gt=2,
-    #             is_published=True,) |
-    #         Q(
-    #             id__gt=1000
-    #         )
-    #     )
-    # )[:10]
-
-    # recipes = Recipe.objects.filter(
-    #     id=F('author__id')
-    # ).order_by('-id', 'title')[:10]
-
-    # recipes = Recipe.objects.values('id', 'title', 'author__username')[:20]
-
-    # recipes = Recipe.objects.defer('is_published')
-    # recipes = Recipe.objects.only('id', 'title')
-    # recipes = Recipe.objects.values('id', 'title').filter(title__icontains='testee')
-    # recipes = Recipe.objects.values('id', 'title')[:5]
-    recipes = Recipe.objects.get_published() # type: ignore
-    number_of_recipes = recipes.aggregate(number=Count('id'))
-
-    context = {
-        'recipes': recipes,
-        'number_of_recipes': number_of_recipes['number']
-    }
-    
-    return render(
-        request,
-        'recipes/pages/theory.html',
-        context=context
-    )
-
 class RecipeListViewBase(ListView):
     model = Recipe
     context_object_name = 'recipes'
@@ -231,6 +185,50 @@ class RecipeDetailApi(RecipeDetail):
             safe=False,
         )
         
+# def theory(request, *args, **kwargs):
+    # recipes = Recipe.objects.all()
+    # recipes = recipes.filter(title__icontains='Teste').last()
+    # recipes = recipes.order_by('-id').last()
+    # try:
+    #     recipes = Recipe.objects.get(id=10000)
+    # except ObjectDoesNotExist:
+    #     recipes = None
+
+    # recipes = Recipe.objects.filter(
+    #     Q(
+    #         Q(
+    #             title__icontains='da',
+    #             id__gt=2,
+    #             is_published=True,) |
+    #         Q(
+    #             id__gt=1000
+    #         )
+    #     )
+    # )[:10]
+
+    # recipes = Recipe.objects.filter(
+    #     id=F('author__id')
+    # ).order_by('-id', 'title')[:10]
+
+    # recipes = Recipe.objects.values('id', 'title', 'author__username')[:20]
+
+    # recipes = Recipe.objects.defer('is_published')
+    # recipes = Recipe.objects.only('id', 'title')
+    # recipes = Recipe.objects.values('id', 'title').filter(title__icontains='testee')
+    # recipes = Recipe.objects.values('id', 'title')[:5]
+    # recipes = Recipe.objects.get_published() # type: ignore
+    # number_of_recipes = recipes.aggregate(number=Count('id'))
+
+    # context = {
+    #     'recipes': recipes,
+    #     'number_of_recipes': number_of_recipes['number']
+    # }
+    
+    # return render(
+    #     request,
+    #     'recipes/pages/theory.html',
+    #     context=context
+    # )
     
 # def recipe(request, id):
 #     # recipe = Recipe.objects.filter(pk=id, is_published=True).order_by('-id').first()

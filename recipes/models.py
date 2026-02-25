@@ -34,7 +34,7 @@ class RecipeManager(models.Manager):
 class Recipe(models.Model):
     objects = RecipeManager()
     title = models.CharField(max_length=65, verbose_name=_('Title'))
-    description = models.CharField(max_length=165, verbose_name=_('description'))
+    description = models.CharField(max_length=165)
     slug = models.SlugField(unique=True)
     preparation_time = models.IntegerField()
     preparation_time_unit = models.CharField(max_length=65)
@@ -45,10 +45,15 @@ class Recipe(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_published = models.BooleanField(default=False)
-    cover = models.ImageField(upload_to='recipes/covers/%Y/%m/%d/', blank=True, default='')
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, default=None,)
-    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    # tags = GenericRelation(Tag, related_query_name='recipes')
+    cover = models.ImageField(
+        upload_to='recipes/covers/%Y/%m/%d/', blank=True, default='')
+    category = models.ForeignKey(
+        Category, on_delete=models.SET_NULL, null=True, blank=True,
+        default=None,
+    )
+    author = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True
+    )
     tags = models.ManyToManyField(Tag, blank=True, default='')
 
     def __str__(self):

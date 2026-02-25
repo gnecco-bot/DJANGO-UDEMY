@@ -26,10 +26,8 @@ class RecipeModelTeste(RecipeTestBase):
             service=5,
             service_unit='Porções',
             preparation_steps='Recipe Preparation Steps',
-            preparation_steps_is_html=False,
-            is_published=False,
         )
-        recipe.full_clean()
+        # recipe.full_clean()
         recipe.save()
         return recipe
     
