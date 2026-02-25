@@ -15,7 +15,7 @@ def recipe_api_list(request):
 @api_view()
 def recipe_api_detail(request, pk):
     recipe = get_object_or_404(
-        Recipe.objects.get_published(),
+        Recipe.objects.get_published(), # type:ignore
         pk=pk
     )
     serializer = RecipeSerializer(instance=recipe, many=False)
