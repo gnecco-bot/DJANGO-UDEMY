@@ -14,9 +14,13 @@ def recipe_api_list(request):
         recipes = Recipe.objects.get_published()[:10] # type:ignore
         serializer = RecipeSerializer(instance=recipes, many=True, context={'request': request},)
         return Response(serializer.data)
+    
     elif request.method == 'POST':
-        return Response('POST', status=status.HTTP_201_CREATED)
-
+        serializer = RecipeSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
+    
 @api_view()
 def recipe_api_detail(request, pk):
     recipe = get_object_or_404(
