@@ -8,11 +8,14 @@ from ..serializers import TagSerializer
 from ..models import Recipe
 from ..serializers import RecipeSerializer
 
-@api_view()
+@api_view(http_method_names=['get', 'post'])
 def recipe_api_list(request):
-    recipes = Recipe.objects.get_published()[:10] # type:ignore
-    serializer = RecipeSerializer(instance=recipes, many=True, context={'request': request},)
-    return Response(serializer.data)
+    if request.method == 'GET':
+        recipes = Recipe.objects.get_published()[:10] # type:ignore
+        serializer = RecipeSerializer(instance=recipes, many=True, context={'request': request},)
+        return Response(serializer.data)
+    elif request.method == 'POST':
+        return Response('POST', status=status.HTTP_201_CREATED)
 
 @api_view()
 def recipe_api_detail(request, pk):
@@ -22,16 +25,6 @@ def recipe_api_detail(request, pk):
     )
     serializer = RecipeSerializer(instance=recipe, many=False, context={'request': request},)
     return Response(serializer.data)
-
-    # recipe = Recipe.objects.get_published().filter(pk=pk).first() # type:ignore
-
-    # if recipe:
-    #     serializer = RecipeSerializer(instance=recipe, many=False)
-    #     return Response(serializer.data)
-    # else:
-    #     return Response({
-    #         'detail': 'Not found'
-    #     }, status=status.HTTP_418_IM_A_TEAPOT)
     
 @api_view()
 def tag_api_detail(request, pk):
