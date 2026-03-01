@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from tag.models import Tag
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.viewsets import ModelViewSet
 
 from ..models import Recipe
 from ..serializers import TagSerializer, RecipeSerializer
@@ -13,10 +14,31 @@ from ..serializers import TagSerializer, RecipeSerializer
 class RecipeAPIv2Pagination(PageNumberPagination):
     page_size = 2
 
-class RecipeAPIv2List(ListCreateAPIView):
+class RecipeAPIv2ViewSet(ModelViewSet):
     queryset = Recipe.objects.get_published() # type:ignore
     serializer_class = RecipeSerializer
     pagination_class = RecipeAPIv2Pagination
+
+    def patch(self, request, *args, **kwargs):
+        pk = kwargs.get('pk')
+        recipe = self.get_queryset().filter(pk=pk).first()
+        serializer = RecipeSerializer(
+            instance=recipe,
+            data=request.data,
+            many=False,
+            context={'request': request},
+            partial=True,
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(
+            serializer.data,
+        )
+
+# class RecipeAPIv2List(ListCreateAPIView):
+#     queryset = Recipe.objects.get_published() # type:ignore
+#     serializer_class = RecipeSerializer
+#     pagination_class = RecipeAPIv2Pagination
 
     # def get(self, request):
     #     recipes = Recipe.objects.get_published()[:10] # type:ignore
@@ -42,26 +64,26 @@ class RecipeAPIv2List(ListCreateAPIView):
 #         serializer.save()
 #         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
-class RecipeAPIv2Detail(RetrieveUpdateDestroyAPIView):
-    queryset = Recipe.objects.get_published() # type:ignore
-    serializer_class = RecipeSerializer
-    pagination_class = RecipeAPIv2Pagination
+# class RecipeAPIv2Detail(RetrieveUpdateDestroyAPIView):
+#     queryset = Recipe.objects.get_published() # type:ignore
+#     serializer_class = RecipeSerializer
+#     pagination_class = RecipeAPIv2Pagination
 
-    def patch(self, request, *args, **kwargs):
-        pk = kwargs.get('pk')
-        recipe = self.get_queryset().filter(pk=pk).first()
-        serializer = RecipeSerializer(
-            instance=recipe,
-            data=request.data,
-            many=False,
-            context={'request': request},
-            partial=True,
-        )
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(
-            serializer.data,
-        )
+#     def patch(self, request, *args, **kwargs):
+#         pk = kwargs.get('pk')
+#         recipe = self.get_queryset().filter(pk=pk).first()
+#         serializer = RecipeSerializer(
+#             instance=recipe,
+#             data=request.data,
+#             many=False,
+#             context={'request': request},
+#             partial=True,
+#         )
+#         serializer.is_valid(raise_exception=True)
+#         serializer.save()
+#         return Response(
+#             serializer.data,
+#         )
         
     # def get_recipe(self, pk):
     #     recipe = get_object_or_404(
