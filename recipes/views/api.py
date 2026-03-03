@@ -57,7 +57,23 @@ class RecipeAPIv2ViewSet(ModelViewSet):
             return [IsOwner(), ]
         
         return super().get_permissions()
-
+    
+    def list(self, request, *args, **kwargs):
+        print('REQUEST', request.user)
+        print(request.user.is_authenticated)
+        return super().list(request, *args, **kwargs)
+    
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(author=request.user)
+        headers = self.get_success_headers(serializer.data)
+        return Response(
+            serializer.data,
+            status=status.HTTP_201_CREATED,
+            headers=headers
+        )
+    
     def partial_update(self, request, *args, **kwargs):
         recipe = self.get_object()
         serializer = RecipeSerializer(
