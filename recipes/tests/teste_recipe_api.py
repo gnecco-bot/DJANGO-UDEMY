@@ -3,28 +3,32 @@ from rest_framework import test
 from recipes.tests.test_recipe_base import RecipeMixin
 from unittest.mock import patch
 
-class RecipeAPIv2Test(test.APITestCase, RecipeMixin):
-    def get_recipe_reverse_url(self, reverse_result=None):
+class RecipeAPIv2TestMixin(RecipeMixin):
+    def get_recipe_list_reverse_url(self, reverse_result=None):
         api_url = reverse_result or reverse('recipes:recipes-api-list')
         return api_url
 
     def get_recipe_api_list(self, reverse_result=None):
-        api_url = self.get_recipe_reverse_url(reverse_result)
-        response = self.client.get(api_url)
+        api_url = self.get_recipe_list_reverse_url(reverse_result)
+        response = self.client.get(api_url) # type: ignore
         return response
 
-    def get_jwt_access_token(self):
+    def get_auth_data(self, username='user', password='pass'):
         userdata = {
-            'username': 'user',
-            'password': 'password'
+            'username': username,
+            'password': password
         }
-        self.make_author(
+        user = self.make_author(
                 username=userdata.get('username'), # type: ignore
                 password=userdata.get('password')  # type: ignore
             )
-        response = self.client.post(reverse('recipes:token_obtain_pair'), data={**userdata})
+        response = self.client.post(reverse('recipes:token_obtain_pair'), data={**userdata}) # type: ignore
 
-        return response.data.get('access') # type: ignore
+        return {
+            'jwt_access_token': response.data.get('access'),
+            'jwt_refresh_token': response.data.get('refresh'),
+            'user': user,
+            } # type: ignore
     
     def get_recipe_raw_data(self):
         return  {
@@ -39,11 +43,12 @@ class RecipeAPIv2Test(test.APITestCase, RecipeMixin):
 
     def test_recipe_api_list_returns_status_code_200(self):
         response = self.get_recipe_api_list()
-        self.assertEqual(
+        self.assertEqual( # type: ignore
             response.status_code,
             200
         )
-    
+
+class RecipeAPIv2Test(test.APITestCase, RecipeAPIv2TestMixin):
     @patch('recipes.views.api.RecipeAPIv2Pagination.page_size', new=7)
     def test_recipe_api_list_loads_correct_number_of_recipes(self):
         # ajuste
@@ -100,7 +105,7 @@ class RecipeAPIv2Test(test.APITestCase, RecipeMixin):
         )
 
     def test_recipe_api_list_user_must_send_jwt_token_to_create_recipe(self):
-        api_url = self.get_recipe_reverse_url()
+        api_url = self.get_recipe_list_reverse_url()
         response = self.client.post(api_url)
         self.assertEqual(
             response.status_code,
@@ -108,14 +113,48 @@ class RecipeAPIv2Test(test.APITestCase, RecipeMixin):
         )
 
     def test_recipe_api_list_logged_user_can_create_a_recipe(self):
-        data = self.get_recipe_raw_data()
-        data['preparation_time'] = 2
+        recipe_raw_data = self.get_recipe_raw_data()
+        auth_data = self.get_auth_data()
+        jwt_access_token = auth_data.get('jwt_access_token')
+
+        recipe_raw_data['preparation_time'] = 2
+
         response = self.client.post(
-            self.get_recipe_reverse_url(),
-            data=data,
-            HTTP_AUTHORIZATION=f'Bearer {self.get_jwt_access_token()}'
+            self.get_recipe_list_reverse_url(),
+            data=recipe_raw_data,
+            HTTP_AUTHORIZATION=f'Bearer {jwt_access_token}'
         )
         self.assertEqual(
             response.status_code,
             201
+        )
+        
+    def test_recipe_api_list_logged_user_can_update_a_recipe(self):
+        # Arrange (config do test)
+        recipe = self.make_recipe()
+        access_data = self.get_auth_data(username='test_patch')
+        jwt_access_token = access_data.get('jwt_access_token') 
+        author = access_data.get('user')
+        recipe.author = author
+        recipe.save()
+
+        wanted_new_title = f'The new title updated by {author.username}' # type: ignore
+
+        # Action (Ação)
+        response = self.client.patch(
+            reverse('recipes:recipes-api-detail', args=(recipe.id,)), # type: ignore
+            data={
+                'title': wanted_new_title
+            },
+            HTTP_AUTHORIZATION=f'Bearer {jwt_access_token}'
+        )
+
+        # Assertion (Afirmação)
+        self.assertEqual(
+            response.status_code, 
+            200,
+        )
+        self.assertEqual(
+            response.data.get('title'), # type: ignore
+            wanted_new_title,
         )
