@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Olá mundo</h1>
+</body>
+<script>
+    //  Gera JWT TOKEN
+// (async function() {
+//     console.clear();
+//     const headers = {
+//         'Content-Type': 'application/json',
+//     };
+//     const body = JSON.stringify({
+//     	"username": "lucas",
+//     	"password": "123456"
+//     });
+//     const config = {
+//         method: 'POST',
+//         headers: headers,
+//         body: body
+//     };
+//     const response = await fetch(
+//         'http://127.0.0.1:8000/recipes/api/token/',
+//         config
+//     );
+    
+//     const json = await response.json();
+
+//     console.log('STATUS', response.status);
+//     console.log(json.access);
+// })();
+
+// Conecta ao servidor via API
+(async function() {
+    console.clear();
+    const headers = {
+        authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzcyODk4NTAyLCJpYXQiOjE3NzI4OTEzMDIsImp0aSI6IjFiNmI2ODk1Y2NlOTRjNGJiYmI1NGM1Y2Q1Y2FmMDM4IiwidXNlcl9pZCI6IjEifQ.H5fyGSyVd3mlPIUb8Wwoh40m4K4r0XB-TqMEm9s25mU'
+    };
+    const config = {
+        method: 'GET',
+        headers: headers,
+    };
+    const response = await fetch(
+        'http://127.0.0.1:8000/recipes/api/v2/450',
+        config
+    );
+    
+    const json = await response.json();
+
+    console.log('STATUS', response.status);
+    console.log(json);
+})();
+</script>
+</html>
